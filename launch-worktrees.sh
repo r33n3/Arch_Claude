@@ -11,11 +11,15 @@
 SESSION="worktrees"
 REPO="$(pwd)"
 
+FOUNDATION_PROMPT="Read CLAUDE-foundation.md and execute the task fully. Build all files described, validate the first-time and returning student flows work, then raise a PR and update sprint-progress.md."
+
+ONBOARDING_PROMPT="Read CLAUDE-onboarding.md. Wait for the foundation PR to merge first (git fetch origin && git rebase origin/main), then execute the task fully. Build day-0-onboarding.md and opening-exercise.md, validate end-to-end under at least 2 personas, then raise a PR and update sprint-progress.md."
+
 tmux new-session -d -s "$SESSION" -c "$REPO/.claude/worktrees/foundation"
-tmux send-keys -t "$SESSION" "echo '=== FOUNDATION — run first, raise PR before onboarding goes deep ===' && claude" Enter
+tmux send-keys -t "$SESSION" "claude --dangerously-skip-permissions -p \"$FOUNDATION_PROMPT\"" Enter
 
 tmux split-window -h -t "$SESSION" -c "$REPO/.claude/worktrees/onboarding"
-tmux send-keys -t "$SESSION" "echo '=== ONBOARDING — wait for foundation PR to merge, then: git fetch origin && git rebase origin/main ===' && claude" Enter
+tmux send-keys -t "$SESSION" "claude --dangerously-skip-permissions -p \"$ONBOARDING_PROMPT\"" Enter
 
 tmux select-pane -t "$SESSION:0.0"
 tmux attach -t "$SESSION"
