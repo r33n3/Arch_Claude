@@ -1,0 +1,84 @@
+# .claude/worktrees.yaml
+# CCA Foundations Course — Sprint 1
+# Run from repo root: ./launch-worktrees.sh
+
+base_branch: main
+worktree_path: .claude/worktrees
+max_worktrees: 4
+tmux_session: worktrees
+setup_commands: []
+launch_mode: sequential
+foundation_task: foundation
+
+shared_risk_files:
+  - CLAUDE.md
+  - README.md
+  - .gitignore
+
+ignore_paths:
+  - .git
+  - .student_cca
+  - .playwright-mcp
+
+tasks:
+  - name: foundation
+    description: |
+      Build the course foundation: CLAUDE.md bootstrap logic (session detection, persona
+      loading, first-time vs returning student orientation), .student_cca/ template files
+      (student.md with 4 persona options + switch instructions, progress.md tracking
+      structure), README.md prerequisites section, and .gitignore. This is the scaffold
+      everything else builds on — no domain content, just the instructor engine and
+      student state system. Follow the Noctua pattern from docs/specs/cca-course-build-spec.md.
+      CLAUDE.md must stay under 80 lines. .student_cca/ must be gitignored.
+
+  - name: onboarding
+    description: |
+      Build the Day 0 onboarding experience: domains/day-0-onboarding.md and
+      exercises/opening-exercise.md. Day 0 explains the course structure, all 5 domains
+      with exam weight percentages, how the instructor system works, and walks the student
+      through persona selection. The opening exercise dynamically generates a coordinator +
+      2 subagents scenario based on student background (collected during Day 0), with the
+      instructor narrating each step of execution in the student's chosen persona voice.
+      After the demo, debrief maps observed behavior to Domain 1 CCA concepts. Student
+      background data should use fictional enterprise scenarios from the build-spec
+      (FinClearance Corp, MedRoute Health, BuildOps Inc, SecurePath Systems). Depends on
+      foundation task completing first.
+
+# Sprint 2 and 3 tasks — run after Sprint 1 is merged
+# Uncomment and re-run /worktree-setup for Sprint 2:
+#
+#   - name: domain-1
+#     description: |
+#       Build Domain 1 — Agentic Architecture & Orchestration (27% exam weight).
+#       Files: domains/domain-1-agentic-architecture.md, exercises/domain-1-demo.md,
+#       exercises/domain-1-lab.md. Structure: opening hook (persona-voiced), exercise-first
+#       engagement, directed reading links to Anthropic docs, concept walkthrough,
+#       embedded knowledge checks, domain checkpoint writing to .student_cca/progress.md.
+#       Lab uses fictional enterprise scenario. Live demo spins up real subagents via
+#       Task tool to demonstrate agentic loop, coordinator roles, subagent invocation.
+#       Validate all directed reading links are live Anthropic URLs.
+#
+#   - name: domain-2
+#     description: |
+#       Build Domain 2 — Tool Design & MCP (18% exam weight).
+#       Files: domains/domain-2-tool-design.md, exercises/domain-2-demo.md,
+#       exercises/domain-2-lab.md. Same structure as Domain 1. Topics: tool interface
+#       design, structured error responses, tool distribution, MCP configuration,
+#       built-in tools, tool_choice options. Live demo shows tool design patterns in action.
+#
+#   - name: domain-3
+#     description: |
+#       Build Domain 3 — Claude Code Configuration (20% exam weight).
+#       Files: domains/domain-3-claude-code.md, exercises/domain-3-demo.md,
+#       exercises/domain-3-lab.md. Topics: CLAUDE.md hierarchy, custom slash commands,
+#       skills, path-specific rules, plan mode, CI/CD integration. Live demo exercises
+#       Claude Code configuration patterns directly.
+#
+#   - name: domain-4
+#     description: |
+#       Build Domain 4 — Prompt Engineering (20% exam weight).
+#       Files: domains/domain-4-prompt-engineering.md, exercises/domain-4-demo.md,
+#       exercises/domain-4-lab.md. Topics: explicit criteria, few-shot prompting,
+#       structured output, schema design, validation loops, Batch API, multi-instance
+#       review. Live demo shows prompt engineering patterns producing measurably
+#       different outputs.
