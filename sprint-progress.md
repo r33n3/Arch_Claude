@@ -3,14 +3,29 @@
 The main session uses this file to coordinate PR merges in order.
 Agents: update your row when you raise your PR. Do not modify other rows.
 
+## Sprint 1 — Complete
+
 | Agent | Status | PR | Notes |
 |---|---|---|---|
-| foundation | committed | no-remote (local repo only) | All files committed on worktree-foundation branch. No GitHub remote configured — PR cannot be raised. Merge manually: git checkout main && git merge worktree-foundation |
-| onboarding | committed | no-remote (local repo only) | domains/day-0-onboarding.md and exercises/opening-exercise.md committed on worktree-onboarding. Used FinClearance Corp scenario (financial services, regulatory doc analysis). Task tool invocation uses two parallel agents: terminology-mapping subagent and gap-analysis subagent, each with explicitly scoped task descriptions. Failure fallback documented. Merge manually: git checkout main && git merge worktree-onboarding |
+| foundation | merged | direct | CLAUDE.md 74 lines, templates embedded inline |
+| onboarding | merged | direct | FinClearance Corp scenario, Task tool pattern documented |
 
-## Merge order
-1. foundation (must merge before onboarding starts deep work)
-2. onboarding
+## Sprint 2 — In Progress
+
+| Agent | Status | PR | Notes |
+|---|---|---|---|
+| domain-1 | in-progress | — | — |
+| domain-2 | in-progress | — | — |
+| domain-3 | committed | — | domains/domain-3-claude-code.md, exercises/domain-3-demo.md, exercises/domain-3-lab.md. Meta angle: course CLAUDE.md used as primary teaching example throughout. Subdirectory CLAUDE.md hierarchy tested via Meridian Analytics demo scenario. |
+| domain-4 | committed | — | domains/domain-4-prompt-engineering.md, exercises/domain-4-demo.md, exercises/domain-4-lab.md. SecurePath Systems (threat classification) scenario used throughout. Demo shows 4-step prompt progression (raw → format → JSON schema → few-shot) plus live validation loop. Lab uses vendor security bulletins as data source; 6-step scaffolded build with iteration log. |
+| domain-5 | in-progress | — | — |
+
+## Merge order (Sprint 2 — all parallel, merge in numeric order)
+1. domain-1
+2. domain-2
+3. domain-3
+4. domain-4
+5. domain-5
 
 ## Memory captures (agents fill in — main session writes to memory after merge)
 
@@ -21,6 +36,7 @@ should know — add it here before raising your PR.
 |---|---|
 | foundation | CLAUDE.md embeds both template files inline (student.md + progress.md). On first run, Claude creates `.student_cca/` and writes those templates from the embedded content — no separate template files are committed. Domain agents reading CLAUDE.md: the bootstrap logic is in Steps 1–3 + persona switch section. The `.gitignore` must exist on the foundation branch (not inherited from main) because worktrees use the branch's own tracked files. |
 | onboarding | Enterprise scenario: FinClearance Corp (financial services, regulatory doc analysis) — most universally relatable across practitioner backgrounds. Task tool pattern: coordinator invokes two parallel Tasks, each with a self-contained task description including role, deliverable, scope constraints, and a note about what the parallel agent is doing (prevents scope drift). Persona delivery pattern for domain agents: each narration block must have 4 variants keyed to the persona name; Socratic questions must be marked as blocking (wait for student response); Challenger persona always demands a specific answer before continuing. Failure fallback: narrate what would have happened, never block course progress on tool failure. |
+| domain-4 | Demo progression pattern: 5 steps (raw → format constraint → JSON schema → few-shot → validation loop) is a reusable teaching arc for any structured output domain. Intentionally weakened Step 2 prompt for the validation loop demo — makes the reviewer's value visible. Lab uses iteration log (Step 6) as primary exam study artifact — students generate their own case study. SecurePath threat classification scenario is compatible with domain-1 FinClearance Corp — both enterprise, different industry. Checkpoint writes to .student_cca/progress.md using exact field names from CLAUDE.md template: Status, Confidence, Confusion Log, Last session note. |
 
 ## Memory updates (main session fills this after each merge)
 <!-- Record what shipped and any open items that carry forward -->
