@@ -368,6 +368,52 @@ If the failed subagent's work is required for synthesis, the coordinator cannot 
 
 ---
 
+### 9. Model Selection for Agentic Systems
+
+> **Instructor — opening narration in persona voice:**
+>
+> *Practitioner:* "Every architectural decision in a multi-agent system has a cost. Model selection is the one most teams get wrong first — not because they pick the wrong model for a task, but because they don't pick at all. They use the best model everywhere and then wonder why their system costs 10x what they projected. Model selection is an architectural decision, not a configuration detail."
+>
+> *Socratic:* "You've designed an agentic system with a coordinator and three workers. Before we talk about which models to use — what information would you need to know about each agent's task before you could make that decision? Think about it."
+>
+> *Coach:* "Here's something that will save you money in production: not every agent needs the same model. The coordinator doing complex decomposition has different requirements than a worker that's just classifying a document into one of five categories. Matching the model to the task is a skill — and it's on the exam."
+>
+> *Challenger:* "What's the cost of using Claude Opus 4.7 for every agent in a 10-agent system versus a correctly tiered system? If you can't answer that, you're not ready to design production agentic systems. Let's fix that."
+
+---
+
+The Claude 4.x family has three tiers. Each has a different capability ceiling, latency profile, and cost structure. For agentic systems, these differences compound — every agent call is a separate model invocation.
+
+**The Claude 4.x family:**
+
+| Model | Capability tier | Best for in agentic systems |
+|---|---|---|
+| Claude Opus 4.7 | Highest reasoning | Coordinators doing complex decomposition; novel multi-hop reasoning; tasks where quality is non-negotiable |
+| Claude Sonnet 4.6 | Balanced | Default for most agents; general-purpose subagents with moderate reasoning requirements |
+| Claude Haiku 4.5 | Fast, lightweight | High-volume simple subagents: classification, extraction, formatting, routing |
+
+**Coordinator vs. worker model patterns:**
+
+The coordinator's job is to reason about the whole problem — decompose it, route subtasks, synthesize results. This benefits from Opus 4.7's reasoning depth.
+
+Workers have bounded, well-defined tasks. A worker that classifies a document into one of five categories does not need Opus. Haiku 4.5 will produce identical output at a fraction of the cost and latency.
+
+**The cost-capability tradeoff at scale:**
+
+A 10-agent system where every agent uses Opus 4.7 costs 5–10x more than the same system with correctly tiered models. At production volume, this difference is not theoretical.
+
+The design principle: match model capability to task complexity. Haiku for simple, well-constrained tasks. Sonnet as the default for general agents. Opus for genuinely complex reasoning.
+
+> **Knowledge Check:** You're designing an agentic system with 4 agents: (1) a coordinator that decomposes incoming legal documents and routes them to specialists, (2) a contract classifier that assigns each document to one of 8 contract types, (3) a clause extractor that identifies and pulls specific named clauses, (4) a synthesis agent that writes a unified analysis from all specialist outputs. Assign a model to each agent and justify your choices.
+>
+> *(Take a moment before scrolling)*
+>
+> **Exam-aligned answer:** Coordinator → Opus 4.7 (complex routing and synthesis logic). Classifier → Haiku 4.5 (bounded classification, 8 categories, no open-ended reasoning). Clause extractor → Haiku 4.5 or Sonnet 4.6 (structured extraction; Haiku if well-defined fields, Sonnet if clauses require interpretation). Synthesis agent → Sonnet 4.6 or Opus 4.7 (cross-document reasoning; Opus if quality is critical).
+
+> **Exam pattern:** The CCA exam presents multi-agent system designs and asks which model configuration is most appropriate. The trap answer is Opus everywhere. The correct answer matches model capability to task complexity and justifies the cost-latency tradeoff. Any answer that ignores cost or treats model selection as a purely capability decision is incomplete.
+
+---
+
 ## Domain Checkpoint
 
 You've completed the Domain 1 concept walkthrough. Before we move on, the instructor will assess your understanding and update your progress record.
