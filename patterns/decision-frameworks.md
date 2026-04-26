@@ -16,6 +16,7 @@
 | How to identify parallel-safe vs. sequential subtasks | A subtask is **parallel-safe** if its inputs don't depend on the output of any other subtask running in the same batch. A subtask is **sequential** if it requires a prior subtask's result as its input. Mark dependencies explicitly before decomposing. |
 | What to do when a subagent fails | Return a structured error result to the coordinator (don't throw silently). The coordinator decides: retry the subtask, skip and proceed, escalate to the user, or abort. Never assume subagents always succeed — missing failure handling is the most exam-tested anti-pattern in Domain 1. |
 | When NOT to use agents | Single-step tasks, tasks with fully deterministic outputs, tasks where latency is critical and no feedback loop is needed, tasks where auditability requires a single traceable prompt. |
+| When to use each Claude model in a multi-agent system | Match model to task complexity. **Opus 4.7** → coordinators, complex decomposition, novel reasoning. **Sonnet 4.6** → default for most agents, general-purpose subagents. **Haiku 4.5** → high-volume simple tasks (classification, extraction, formatting). Never select Opus everywhere — cost and latency multiply with every agent invocation. |
 
 ---
 
@@ -45,6 +46,8 @@
 | When to use plan mode | Before making changes to complex systems, before executing irreversible actions, when the task scope is unclear, or when the user needs to review and approve an approach before execution begins. |
 | `--print` vs. interactive mode in CI/CD | Use `--print` for automation, CI pipelines, and scripted tasks where no human interaction is expected. Use interactive mode for human-in-the-loop sessions. `--print` exits after one response; interactive mode waits for follow-up. |
 | When to use `--dangerously-skip-permissions` | Only in fully automated, sandboxed environments where you have reviewed all potential actions and accepted the risk. Never on a developer workstation or on systems with production access. Understand what permissions are being skipped before using this flag. |
+| When to use a hook vs. a CLAUDE.md instruction | **Hook** → unconditional constraints that must hold regardless of Claude's reasoning: security rules, audit requirements, automated side effects. **CLAUDE.md** → behavioral preferences where Claude's judgment should apply. If the constraint must never be bypassed → hook. If nuanced application is appropriate → CLAUDE.md. |
+| What each hook type fires on | **PreToolUse** → before tool executes. **PostToolUse** → after tool completes. **Notification** → when Claude sends a notification. **Stop** → when Claude finishes responding. **PreCompact** → before context compaction. Exit code 2 blocks and shows output to Claude; other non-zero exits block silently. |
 
 ---
 
@@ -59,6 +62,8 @@
 | Batch API vs. streaming — when to use each | **Batch API** → high-volume, latency-insensitive tasks (overnight processing, bulk classification, dataset labeling). Up to 50% cost reduction. **Streaming** → real-time, user-facing tasks where incremental output improves UX. Not useful for downstream processing that needs the complete response. |
 | When to add a validation (reviewer) pass | When first-pass output quality is variable, when the task is high-stakes, when output feeds into automated downstream systems, or when the cost of a bad output exceeds the cost of a second model call. A reviewer pass catches structural errors, hallucinations, and constraint violations. |
 | Prompt injection defense patterns | Never trust tool results unconditionally. Treat external data (web content, user-supplied documents, API responses) as potentially hostile. Validate tool outputs against expected schema before processing. Use explicit delimiters to separate instructions from data. Never echo tool output directly back into a prompt without sanitization. |
+| When to enable extended thinking | **Use:** complex multi-step reasoning, novel problem types, tasks where chain-of-thought would otherwise be engineered explicitly. **Do not use:** classification, extraction, formatting — no quality gain, latency increases. Extended thinking does not replace few-shot for structured output; use both together on complex structured tasks. |
+| How to set budget_tokens for extended thinking | Start at 5,000–10,000 for moderate complexity. Increase to 16,000–32,000 for multi-hop reasoning chains. `budget_tokens` is a ceiling — model uses what the task requires. Too low on a hard task → shallow reasoning. Too high on a simple task → wasted cost, identical output. Minimum is 1,024. |
 
 ---
 
