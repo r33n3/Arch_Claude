@@ -442,6 +442,108 @@ Putting user-supplied data in the system prompt. This is both a security risk (i
 
 ---
 
+### 9. Extended Thinking
+
+> **Instructor — opening narration in persona voice:**
+>
+> *Practitioner:* "Extended thinking is a reasoning depth dial. You give Claude a token budget and it reasons through the problem before responding — exploring approaches, checking its own logic, working through intermediate steps. The output quality on hard problems goes up. So does the cost and latency. It is not a magic quality boost — it's a deliberate tradeoff that pays off on some tasks and wastes resources on others."
+>
+> *Socratic:* "Before I explain how extended thinking works — think about what happens inside a model when it generates a response. What would change if the model had a dedicated scratchpad to reason through the problem before committing to an answer? What kinds of problems would benefit most? Which wouldn't?"
+>
+> *Coach:* "Extended thinking is one of those features that sounds complex but is actually straightforward to use. You add two lines to your API call, set a token budget, and Claude does the rest. The skill is knowing when to turn it on and what budget to set — which is exactly what the exam tests."
+>
+> *Challenger:* "Extended thinking adds latency and cost. Give me three scenarios where that tradeoff is worth it. Then give me three where it isn't. If you can't do both, you don't understand what extended thinking is actually solving."
+
+---
+
+**What extended thinking is:**
+
+Claude reasons through a problem in an internal scratchpad before generating its response. The thinking process is visible in the API response as `thinking` typed content blocks. Thinking tokens are not billed as output tokens — they are billed at the input token rate — but they consume the context window.
+
+**How to enable:**
+
+```python
+import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=16000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000
+    },
+    messages=[{
+        "role": "user",
+        "content": "Analyze the following contract clause for ambiguity and potential enforcement risks..."
+    }]
+)
+
+# Access thinking and text blocks separately
+for block in response.content:
+    if block.type == "thinking":
+        print("Thinking:", block.thinking)
+    elif block.type == "text":
+        print("Response:", block.text)
+```
+
+**`budget_tokens` as a reasoning depth dial:**
+
+| Budget range | Use for |
+|---|---|
+| 1,024–3,000 | Minimum. Simple reasoning tasks where light chain-of-thought helps |
+| 5,000–10,000 | Moderate complexity. Multi-step analysis, structured reasoning |
+| 10,000–32,000 | High complexity. Novel problems, multi-hop reasoning, complex synthesis |
+
+`budget_tokens` is a ceiling — Claude uses as much reasoning as the task requires, up to the budget. Setting it too low for a complex task produces shallow reasoning. Setting it too high on a simple task wastes tokens with no quality gain.
+
+**When to use extended thinking:**
+- Complex multi-step reasoning (multi-hop math, layered legal or technical analysis, novel problem types)
+- Tasks where you would otherwise engineer explicit chain-of-thought prompting
+- High-stakes decisions where reasoning transparency adds value
+- Problems that benefit from exploring multiple approaches before committing
+
+**When NOT to use extended thinking:**
+- Simple classification, extraction, or formatting — budget is wasted, latency increases, quality unchanged
+- High-throughput pipelines where latency is a constraint
+- Tasks already solved well by few-shot examples alone
+
+**Extended thinking + few-shot — a common exam trap:**
+
+Extended thinking does not replace few-shot examples for structured output tasks. Few-shot examples constrain output format and teach the output pattern. Extended thinking improves reasoning depth. For complex structured output (e.g., legal clause analysis with a specific JSON schema), use both together.
+
+**Streaming extended thinking:**
+
+When streaming, thinking content arrives in `thinking` typed content blocks before `text` blocks:
+
+```python
+with client.messages.stream(
+    model="claude-opus-4-7",
+    max_tokens=16000,
+    thinking={"type": "enabled", "budget_tokens": 8000},
+    messages=[{"role": "user", "content": "..."}]
+) as stream:
+    for event in stream:
+        if hasattr(event, 'type') and event.type == 'content_block_start':
+            if event.content_block.type == 'thinking':
+                print("Thinking block started")
+            elif event.content_block.type == 'text':
+                print("Text block started")
+```
+
+> **Knowledge Check 4:**
+>
+> **Knowledge Check:** You're building a threat analysis agent that classifies security alerts as critical / high / medium / low and provides a one-sentence justification. Should you enable extended thinking? If yes, what `budget_tokens` would you set? If no, what technique would you use instead?
+>
+> *(Take a moment before scrolling)*
+>
+> **Exam-aligned answer:** No — this is a classification task with a well-defined output structure. Extended thinking adds cost and latency with no quality benefit. Use few-shot examples with 3–5 labeled alert + classification pairs instead. Few-shot teaches the classification pattern; extended thinking would reason through something that doesn't require reasoning.
+
+> **Exam pattern:** The CCA exam tests extended thinking in two ways: (1) identifying when it's appropriate vs. wasteful — classification and formatting tasks → no; multi-hop reasoning and novel problems → yes. (2) Understanding `budget_tokens` as a ceiling, not a guarantee — the model reasons as much as the task requires up to that limit. Answers that treat extended thinking as universally beneficial are incorrect.
+
+---
+
 ## Domain Checkpoint
 
 When the student reaches this section, Claude should run the following sequence:
