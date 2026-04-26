@@ -50,6 +50,16 @@
 
 ---
 
+### AP-1.5 — Uniform Model Selection
+
+**What it looks like:** Every agent in a multi-agent system uses Claude Opus 4.7. The coordinator, the document classifier, the formatter, the summarizer — all Opus. The developer chose the best model everywhere and called it done.
+
+**Why it fails:** Opus 4.7 is the highest-cost, highest-latency model in the family. Using it for simple subagents — classification, extraction, formatting — adds cost and latency with zero quality benefit over Haiku 4.5 or Sonnet 4.6. A 10-agent system with all Opus can cost 5–10x more than a correctly tiered system. At production volume, this is a significant budget problem.
+
+**What to do instead:** Audit each agent's task complexity before selecting a model. Haiku 4.5 for bounded, well-defined tasks (classification, extraction, routing, formatting). Sonnet 4.6 as the default for general-purpose agents. Opus 4.7 for coordinators doing complex decomposition and for tasks where reasoning quality is genuinely non-negotiable.
+
+---
+
 ## Domain 2 — Tool Design
 > Cross-reference: `domains/domain-2-tool-design.md` — Version A vs. Version B tool description exercise (18% exam weight)
 
@@ -130,6 +140,16 @@
 
 ---
 
+### AP-3.4 — Behavioral Constraints in CLAUDE.md That Should Be Hooks
+
+**What it looks like:** CLAUDE.md contains instructions like "Never delete files from /etc/ or /var/", "Always run tests before committing", "Do not write credentials to disk." The developer treats these as enforced rules.
+
+**Why it fails:** CLAUDE.md is instructional — Claude reads it and applies judgment. Under a sufficiently compelling context (an aggressive task prompt, a long session with context drift, a user override request), Claude may reason around these instructions. CLAUDE.md cannot guarantee unconditional enforcement. "Never do X" in CLAUDE.md is a preference, not a constraint.
+
+**What to do instead:** Any constraint that must hold unconditionally — regardless of what Claude is asked to do — belongs in a `PreToolUse` hook configured in `settings.json`. A hook exits with code 2 before the action runs, blocks it, and shows Claude why it was blocked. Claude cannot reason around a hook. Reserve CLAUDE.md for behavioral preferences where nuanced application by Claude is appropriate.
+
+---
+
 ## Domain 4 — Prompt Engineering
 > Cross-reference: `domains/domain-4-prompt-engineering.md` — vague vs. explicit criteria exercise (20% exam weight)
 
@@ -172,6 +192,16 @@
 **Why it fails:** Tool results, user-supplied documents, and external API responses are not trusted instruction sources — but they arrive in positions where the model may treat them as such. Prompt injection exploits this ambiguity. An agent without injection defenses can be hijacked by any external content it processes.
 
 **What to do instead:** Treat all external data as potentially hostile. Use explicit delimiters to separate instructions from data (`<document>` vs. `<instruction>`). Validate tool outputs against expected schema before processing. Instruct the model to ignore instructions found in data sources. Never echo external content back into a position where it will be interpreted as an instruction.
+
+---
+
+### AP-4.5 — Extended Thinking on Simple Tasks
+
+**What it looks like:** A prompt that classifies customer support tickets as billing / technical / general uses `budget_tokens: 16000`. Every request takes 8–12 seconds and costs 3x what it should. The developer enabled extended thinking because "more reasoning = better output."
+
+**Why it fails:** Extended thinking is a reasoning depth tool for problems that require multi-step reasoning. Simple classification has no reasoning chain to extend — the model produces identical output regardless of the budget, but burns tokens to get there. Adding latency and cost to a classification task produces no quality benefit.
+
+**What to do instead:** Benchmark with and without extended thinking. For classification and extraction tasks, 3–5 few-shot examples outperform extended thinking at a fraction of the cost and latency. Enable extended thinking only when the task genuinely requires multi-step reasoning — novel problems, multi-hop analysis, complex synthesis. When in doubt: try few-shot first.
 
 ---
 
