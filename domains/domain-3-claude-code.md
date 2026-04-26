@@ -44,6 +44,8 @@ Before the concept walkthrough, read these official Anthropic sources. The walkt
 - [Claude Code Configuration](https://docs.anthropic.com/en/docs/claude-code/configuration)
 - [Claude Code Settings](https://docs.anthropic.com/en/docs/claude-code/settings)
 - [Claude Code Slash Commands](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
+5. **Claude Code hooks** — https://docs.anthropic.com/en/docs/claude-code/hooks
+   Read in full. This covers hook types, configuration in settings.json, and exit code behavior. The section 9 concept walkthrough maps directly to this documentation.
 
 > **Instructor note:** Prompt the student to read with a specific question in mind: "While you read — look for anything that explains what you observed in the CLAUDE.md exercise. Annotate where the documentation maps to what you already read."
 
@@ -314,6 +316,8 @@ Hooks are shell commands configured in `settings.json` that fire automatically o
 }
 ```
 
+> **Note:** The exact environment variable name for the written file path (`$CLAUDE_TOOL_INPUT_FILE_PATH`) should be verified against current Claude Code hooks documentation before use. Hook environment variable names may vary by Claude Code version.
+
 **Exit code behavior — this is exam-tested:**
 
 | Exit code | Meaning | What Claude sees |
@@ -331,9 +335,7 @@ Exit code `2` is the most useful for security constraints: Claude sees why it wa
 | CLAUDE.md | Instructional | Yes — Claude applies judgment | Behavioral preferences, session context |
 | Hook | Infrastructure | Never — executes at OS level | Unconditional constraints, automated side effects |
 
-> **Knowledge Check 4:**
->
-> **Knowledge Check:** You want to ensure Claude never deletes files matching `*.env` or `*.pem` during any session. Option A: add an instruction to CLAUDE.md. Option B: write a PreToolUse hook that checks Bash commands for these patterns and exits with code 2 if matched. Which do you choose and why?
+> **Knowledge Check 4:** You want to ensure Claude never deletes files matching `*.env` or `*.pem` during any session. Option A: add an instruction to CLAUDE.md. Option B: write a PreToolUse hook that checks Bash commands for these patterns and exits with code 2 if matched. Which do you choose and why?
 >
 > *(Take a moment before scrolling)*
 >
@@ -359,6 +361,7 @@ Ask the student to rate each topic: High / Medium / Low
 6. Plan mode — when to use it
 7. CI/CD integration — `--print` and headless mode
 8. Permission model — `--dangerously-skip-permissions`
+9. Hooks (hook types, configuration, exit codes, hooks vs. CLAUDE.md)
 
 **Step 2 — Update `.student_cca/progress.md`**
 
