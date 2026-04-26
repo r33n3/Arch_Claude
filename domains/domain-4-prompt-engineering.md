@@ -458,7 +458,7 @@ Putting user-supplied data in the system prompt. This is both a security risk (i
 
 **What extended thinking is:**
 
-Claude reasons through a problem in an internal scratchpad before generating its response. The thinking process is visible in the API response as `thinking` typed content blocks. Thinking tokens are not billed as output tokens — they are billed at the input token rate — but they consume the context window.
+Claude reasons through a problem in an internal scratchpad before generating its response. The thinking process is visible in the API response as `thinking` typed content blocks. Thinking tokens are billed as output tokens but consume the context window. They do not count toward your `max_tokens` output limit — set `max_tokens` high enough to cover both thinking and response tokens.
 
 **How to enable:**
 
@@ -532,8 +532,6 @@ with client.messages.stream(
                 print("Text block started")
 ```
 
-> **Knowledge Check 4:**
->
 > **Knowledge Check:** You're building a threat analysis agent that classifies security alerts as critical / high / medium / low and provides a one-sentence justification. Should you enable extended thinking? If yes, what `budget_tokens` would you set? If no, what technique would you use instead?
 >
 > *(Take a moment before scrolling)*
@@ -561,7 +559,8 @@ Ask the student to rate their confidence on each topic:
 > 5. Batch API — when to use vs. real-time API
 > 6. Multi-instance review — calibrating confidence across calls
 > 7. Prompt injection — attack patterns and defenses
-> 8. System prompt design — what belongs in system vs. user turn"
+> 8. System prompt design — what belongs in system vs. user turn
+> 9. Extended thinking — when to use it, budget_tokens as a ceiling, exam trap with few-shot"
 
 Wait for student responses before continuing.
 
