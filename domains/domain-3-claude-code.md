@@ -255,6 +255,94 @@ Claude Code operates with configurable permissions that determine what it can an
 
 ---
 
+### 9. Claude Code Hooks
+
+> **Instructor — opening narration in persona voice:**
+>
+> *Practitioner:* "CLAUDE.md tells Claude what to do. Hooks enforce what happens. There's a meaningful difference. A CLAUDE.md instruction like 'never write to /etc/' is advice — Claude reads it and applies judgment. A PreToolUse hook that blocks writes to /etc/ executes at the OS level. Claude cannot reason around it. For anything that must hold unconditionally, hooks are the right tool."
+>
+> *Socratic:* "You've seen how CLAUDE.md instructions shape Claude's behavior. Now think about this: is there a scenario where a well-written CLAUDE.md instruction might not be followed? What would cause that? And what would you build instead?"
+>
+> *Coach:* "Hooks are one of the most powerful Claude Code features — and once you understand them, you'll wonder how you worked without them. They let you add automated behavior to any Claude Code action: validate before, react after, block what shouldn't happen. Let's walk through how they work."
+>
+> *Challenger:* "Name one security constraint from your current or most recent project that you put in a system prompt or CLAUDE.md. Now tell me: is that constraint actually enforced, or is it a suggestion Claude reads and might apply? If you can't answer confidently, you don't have a constraint — you have a comment."
+
+---
+
+**What hooks are:**
+
+Hooks are shell commands configured in `settings.json` that fire automatically on Claude Code lifecycle events. Unlike CLAUDE.md instructions — which Claude reads and may apply with judgment — hooks execute at the infrastructure level regardless of Claude's reasoning. They cannot be bypassed by Claude's output.
+
+**Hook types:**
+
+| Hook | Fires when | Common use |
+|---|---|---|
+| `PreToolUse` | Before any tool call executes | Block dangerous patterns, validate inputs, log all tool calls |
+| `PostToolUse` | After a tool call completes | Auto-format written files, trigger downstream actions, log outputs |
+| `Notification` | When Claude sends a notification | Custom alerting, Slack/webhook integration |
+| `Stop` | When Claude finishes a response | Run tests after edits, commit changes, post-response validation |
+| `PreCompact` | Before context compaction | Save state, log session summary |
+
+**Configuration in `settings.json`:**
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/validate-bash.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Exit code behavior — this is exam-tested:**
+
+| Exit code | Meaning | What Claude sees |
+|---|---|---|
+| `0` | Hook passed | Claude proceeds normally |
+| `2` | Hook blocked the action | Hook's stdout is shown to Claude — Claude can reason about the block |
+| Any other non-zero | Hook blocked silently | Claude receives no explanation for the block |
+
+Exit code `2` is the most useful for security constraints: Claude sees why it was blocked and can inform the user or try an alternative approach.
+
+**Hooks vs. CLAUDE.md instructions:**
+
+| Mechanism | Enforcement | Can Claude work around it? | Use for |
+|---|---|---|---|
+| CLAUDE.md | Instructional | Yes — Claude applies judgment | Behavioral preferences, session context |
+| Hook | Infrastructure | Never — executes at OS level | Unconditional constraints, automated side effects |
+
+> **Knowledge Check 4:**
+>
+> **Knowledge Check:** You want to ensure Claude never deletes files matching `*.env` or `*.pem` during any session. Option A: add an instruction to CLAUDE.md. Option B: write a PreToolUse hook that checks Bash commands for these patterns and exits with code 2 if matched. Which do you choose and why?
+>
+> *(Take a moment before scrolling)*
+>
+> **Exam-aligned answer:** Option B — PreToolUse hook. Security constraints that must hold unconditionally belong in hooks, not CLAUDE.md. A CLAUDE.md instruction is guidance Claude reads and may apply — under the right context, it could be overridden. A hook exits 2 before the command runs, blocks it, and shows Claude why. CLAUDE.md is for behavioral preferences where Claude's judgment should apply.
+
+> **Exam pattern:** The CCA exam distinguishes between CLAUDE.md instructions and hooks at the enforcement level. Questions about unconditional constraints (security, audit requirements, CI gates) → hooks. Questions about behavioral preferences (coding style, verbosity, format) → CLAUDE.md. Key phrase to watch for: "must always" or "must never" in the scenario → the correct answer is a hook, not CLAUDE.md.
+
+---
+
 ## Domain Checkpoint
 
 > **Instructor:** Run this sequence at the end of Domain 3.
