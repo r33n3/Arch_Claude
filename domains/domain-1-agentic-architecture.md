@@ -404,6 +404,8 @@ A 10-agent system where every agent uses Opus 4.7 costs 5–10x more than the sa
 
 The design principle: match model capability to task complexity. Haiku for simple, well-constrained tasks. Sonnet as the default for general agents. Opus for genuinely complex reasoning.
 
+> **Knowledge Check 5:**
+>
 > **Knowledge Check:** You're designing an agentic system with 4 agents: (1) a coordinator that decomposes incoming legal documents and routes them to specialists, (2) a contract classifier that assigns each document to one of 8 contract types, (3) a clause extractor that identifies and pulls specific named clauses, (4) a synthesis agent that writes a unified analysis from all specialist outputs. Assign a model to each agent and justify your choices.
 >
 > *(Take a moment before scrolling)*
