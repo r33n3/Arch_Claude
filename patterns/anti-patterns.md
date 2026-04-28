@@ -105,6 +105,16 @@
 
 ---
 
+### AP-2.5 — Files API Misuse: Re-Uploading on Every Call
+
+**What it looks like:** An agent that analyzes the same contract PDF in 5 sequential calls re-uploads the file as an inline document on every call. The developer copied the "pass a document" pattern from the quickstart and never reconsidered it.
+
+**Why it fails:** Inline document embedding pays the full PDF token cost on every call. A 50-page PDF embedded 5 times costs 5x what it should. The Files API exists precisely for this pattern: upload once, reference by `file_id` on subsequent calls. Cost and latency both suffer unnecessarily.
+
+**What to do instead:** Upload once with `client.beta.files.upload()`, store the returned `file_id`, and pass `{"type": "file", "file_id": file_id}` in the document source for all subsequent calls. Use `client.beta.files.delete(file_id)` to remove the file when processing is complete rather than letting it persist for 30 days.
+
+---
+
 ## Domain 3 — Claude Code
 > Cross-reference: `domains/domain-3-claude-code.md` — CLAUDE.md hierarchy section (20% exam weight)
 
@@ -202,6 +212,16 @@
 **Why it fails:** Extended thinking is a reasoning depth tool for problems that require multi-step reasoning. Simple classification has no reasoning chain to extend — the model produces identical output regardless of the budget, but burns tokens to get there. Adding latency and cost to a classification task produces no quality benefit.
 
 **What to do instead:** Benchmark with and without extended thinking. For classification and extraction tasks, 3–5 few-shot examples outperform extended thinking at a fraction of the cost and latency. Enable extended thinking only when the task genuinely requires multi-step reasoning — novel problems, multi-hop analysis, complex synthesis. When in doubt: try few-shot first.
+
+---
+
+### AP-4.6 — Citations on Generative Tasks
+
+**What it looks like:** A summary generation pipeline adds `"citations": {"enabled": True}` to all document inputs. The developer expects citations to improve output quality or add credibility to summaries.
+
+**Why it fails:** Citations attribute claims to source passages. Summaries are synthesis — Claude is not quoting from the document, it is paraphrasing and condensing it. Citations either don't fire at all, or they attach to synthesized content in ways that are meaningless to downstream consumers. The feature adds no quality benefit and adds response parsing complexity.
+
+**What to do instead:** Enable citations only when the task requires traceability — document QA answers, specific extractions, or claims that should point to a passage a human or system needs to verify. For summarization, rewriting, or classification tasks, remove the `citations` parameter entirely and evaluate output quality on its own merits.
 
 ---
 
