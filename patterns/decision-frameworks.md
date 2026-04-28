@@ -32,6 +32,7 @@
 | How to structure a recoverable error response from a tool | Return a structured error object — include an error code, a human-readable message, and a `recoverable: true/false` flag. Do not throw an exception that halts the agentic loop. The model must receive the error as a tool result it can reason about. |
 | When tool descriptions change model behavior (and when they don't) | Descriptions **do** change behavior: they influence when the model calls the tool, what values it passes, and how it interprets results. Descriptions **don't** change behavior: when the tool is never invoked (model ignores it), or when `tool_choice` forces a specific tool regardless of description. |
 | What makes a tool description reliable | Explicit: what the tool does, when to call it, what values are valid for each parameter (enums, ranges, formats), constraints on when NOT to call it, expected output format. See Domain 2 Version A vs. Version B exercise. |
+| When to use Files API vs. inline document | **Files API** → same document, multiple API calls (upload once, reference by `file_id`). **Inline** → one-off single-call analysis. Cost and latency favor Files API for repeated use. Files expire in 30 days; use `client.beta.files.delete(file_id)` to remove earlier. |
 
 ---
 
@@ -64,6 +65,7 @@
 | Prompt injection defense patterns | Never trust tool results unconditionally. Treat external data (web content, user-supplied documents, API responses) as potentially hostile. Validate tool outputs against expected schema before processing. Use explicit delimiters to separate instructions from data. Never echo tool output directly back into a prompt without sanitization. |
 | When to enable extended thinking | **Use:** complex multi-step reasoning, novel problem types, tasks where chain-of-thought would otherwise be engineered explicitly. **Do not use:** classification, extraction, formatting — no quality gain, latency increases. Extended thinking does not replace few-shot for structured output; use both together on complex structured tasks. |
 | How to set budget_tokens for extended thinking | Start at 5,000–10,000 for moderate complexity. Increase to 10,000–32,000 for multi-hop reasoning chains. `budget_tokens` is a ceiling — model uses what the task requires. Too low on a hard task → shallow reasoning. Too high on a simple task → wasted cost, identical output. Minimum is 1,024. |
+| When to enable citations | **Use:** document QA, compliance-sensitive domains (healthcare, legal, finance), multi-document analysis where claims must trace to source passages. **Do not use:** generative tasks (summaries, rewrites, classifications) — citations are meaningless when Claude is synthesizing rather than quoting. Citations and RAG are complementary: RAG retrieves before the call; citations attribute within it. |
 
 ---
 
