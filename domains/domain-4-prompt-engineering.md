@@ -458,7 +458,7 @@ Putting user-supplied data in the system prompt. This is both a security risk (i
 
 **What extended thinking is:**
 
-Claude reasons through a problem in an internal scratchpad before generating its response. The thinking process is visible in the API response as `thinking` typed content blocks. Thinking tokens are billed as output tokens but consume the context window. They do not count toward your `max_tokens` output limit — set `max_tokens` high enough to cover both thinking and response tokens.
+Claude reasons through a problem in an internal scratchpad before generating its response. The thinking process is visible in the API response as `thinking` typed content blocks. Thinking tokens are not billed as output tokens — they are billed at the input token rate. However, they do consume the context window and count toward your `max_tokens` ceiling, so set `max_tokens` high enough to cover both thinking and response tokens combined.
 
 **How to enable:**
 

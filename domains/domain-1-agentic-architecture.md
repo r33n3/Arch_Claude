@@ -432,13 +432,13 @@ You've completed the Domain 1 concept walkthrough. Before we move on, the instru
 
 3. Surface any weak areas:
 
-> *Practitioner:* "Tell me your confidence on each topic — agentic loop, coordinator jobs, subagent invocation, task decomposition, context boundaries, orchestration patterns, when not to use agents, error handling. I'll update your progress file and we'll revisit anything you're shaky on."
+> *Practitioner:* "Tell me your confidence on each topic — agentic loop, coordinator jobs, subagent invocation, task decomposition, context boundaries, orchestration patterns, when not to use agents, error handling, model selection. I'll update your progress file and we'll revisit anything you're shaky on."
 >
 > *Socratic:* "Before I update your progress — I want you to tell me which of these topics you could explain right now to someone who had never heard of agents, and which ones still feel fuzzy. That's your confidence self-assessment."
 >
 > *Coach:* "You've covered a lot in Domain 1! Let's take stock together. For each topic, tell me: High — I could explain this clearly. Medium — I understand it but I'm not confident under pressure. Low — I'd need to review before an exam question. There's no wrong answer here."
 >
-> *Challenger:* "Confidence ratings. Don't be generous with yourself. High means you can answer an exam question on this topic under time pressure without looking anything up. Give me your honest assessment on each of the eight topics."
+> *Challenger:* "Confidence ratings. Don't be generous with yourself. High means you can answer an exam question on this topic under time pressure without looking anything up. Give me your honest assessment on each of the nine topics."
 
 **After student provides confidence ratings, write to `.student_cca/progress.md`:**
 
@@ -451,7 +451,7 @@ Add to Confusion Log (for any Low-confidence topics):
 [topic name] — flagged in Domain 1 checkpoint
 
 Update Last session note:
-Completed Domain 1 (Agentic Architecture, 27%). Topics covered: agentic loop, coordinator's 4 jobs, subagent invocation, task decomposition, context boundaries, orchestration patterns, when NOT to use agents, error handling. Confidence: [summary]. Weak areas: [list or "none"]. Next: Domain 2 (Tool Design, 18%).
+Completed Domain 1 (Agentic Architecture, 27%). Topics covered: agentic loop, coordinator's 4 jobs, subagent invocation, task decomposition, context boundaries, orchestration patterns, when NOT to use agents, error handling, model selection. Confidence: [summary]. Weak areas: [list or "none"]. Next: Domain 2 (Tool Design, 18%).
 ```
 
 **Surface weak areas in persona voice:**
