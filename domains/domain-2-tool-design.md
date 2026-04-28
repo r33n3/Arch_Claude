@@ -335,6 +335,91 @@ Tools execute real actions in real systems. Security is not optional.
 
 ---
 
+### 9. Files API
+
+> **Instructor — opening narration in persona voice:**
+>
+> *Practitioner:* "The Files API is a resource design decision: upload a document once, reference it by ID across multiple calls. If you're running the same contract through three sequential analyses, you're not re-embedding the full PDF three times — you upload once, store the file_id, and pass that ID. It's the difference between a library that photocopies books for every patron vs. one that has a shared copy on the shelf."
+>
+> *Socratic:* "Before I explain the Files API — what do you think happens to your token cost and latency if you embed a 50-page PDF in every message for a 5-step analysis pipeline? Now what changes if the document is stored server-side and you pass only a reference?"
+>
+> *Coach:* "The Files API sounds technical but the concept is simple: upload once, reuse many times. It's the same principle as storing a file on a server vs. emailing it as an attachment every time. The API makes this explicit with a file_id you store and reference."
+>
+> *Challenger:* "Files API or inline document — which do you use, and when? Don't give me the general principle. Give me the decision rule with the specific conditions that flip your choice."
+
+---
+
+**What the Files API is:** An Anthropic API feature that lets you upload a document once and reference it by `file_id` across multiple API calls. Files persist on Anthropic's servers for up to 30 days.
+
+**How it works:**
+
+```python
+import anthropic
+
+client = anthropic.Anthropic()
+
+# Upload once
+with open("patient_record.pdf", "rb") as f:
+    file_response = client.beta.files.upload(
+        file=("patient_record.pdf", f, "application/pdf")
+    )
+
+file_id = file_response.id  # store and reuse
+
+# Reference in multiple calls
+response = client.beta.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=1024,
+    messages=[{
+        "role": "user",
+        "content": [
+            {
+                "type": "document",
+                "source": {
+                    "type": "file",
+                    "file_id": file_id
+                }
+            },
+            {"type": "text", "text": "Summarize the key diagnoses."}
+        ]
+    }],
+    betas=["files-api-2025-04-14"]
+)
+```
+
+**Supported file types:** PDF, plain text, images (for vision tasks)
+
+**File lifecycle:** Files persist for up to 30 days. Use `client.beta.files.delete(file_id)` to remove earlier. List uploaded files with `client.beta.files.list()`.
+
+**Files API vs. inline documents:**
+
+| | Files API | Inline document |
+|---|---|---|
+| When to use | Same doc, multiple calls | One-off analysis |
+| Cost | Pay once for upload; reference is cheaper on repeated calls | Pay full tokens every call |
+| Latency | Lower on repeated calls | Same every call |
+| Expiry | 30 days | N/A — not stored |
+
+**When to use Files API:**
+- Same document analyzed multiple times across sequential calls (e.g., extract → score → summarize pipeline)
+- Multi-agent workflows where several agents need the same source document
+- Large documents where repeated inline embedding adds significant cost
+
+**When to use inline documents:**
+- One-off single-call analysis
+- Documents that change on every call
+- Simplicity preferred over optimization
+
+> **Knowledge Check 9:** You're building an agent that processes legal contracts — it runs three sequential analyses (clause extraction → risk scoring → summary generation) on the same PDF. Would you use the Files API or embed the PDF inline in each call? Why?
+>
+> *(Take a moment before scrolling)*
+>
+> **Exam-aligned answer:** Files API. The same document is used across three sequential calls — uploading inline three times pays full PDF token cost three times. Upload once with `client.beta.files.upload()`, store the `file_id`, reference it in all three calls. Use `client.beta.files.delete(file_id)` when done if you don't want the file persisting for 30 days.
+
+> **Exam pattern:** The CCA exam tests Files API in tool/resource design scenarios. The pattern: same document, multiple calls → Files API. One-off analysis → inline. Questions may also ask about file lifecycle (30-day expiry, explicit deletion with `delete()`).
+
+---
+
 ## Domain Checkpoint
 
 **Instructions for Claude (instructor role):**
@@ -353,6 +438,7 @@ Ask the student to rate their confidence on each topic:
 6. MCP configuration
 7. Tool result handling
 8. Security considerations (injection, least privilege, audit logging)
+9. Files API — when to use vs. inline documents, file lifecycle
 
 Collect responses as: **High / Medium / Low**
 
@@ -377,7 +463,7 @@ Add to the Confusion Log any topics rated Low:
 Update Last session note:
 ```
 ## Last session note:
-Completed Domain 2 (Tool Design & MCP). Topics covered: tool interface design, structured errors, tool_choice, built-in tools, tool distribution, MCP configuration, tool result handling, security. Confidence ratings: [list each topic and rating]. Weak areas flagged: [list Low-confidence topics or "none"].
+Completed Domain 2 (Tool Design & MCP). Topics covered: tool interface design, structured errors, tool_choice, built-in tools, tool distribution, MCP configuration, tool result handling, security, Files API. Confidence ratings: [list each topic and rating]. Weak areas flagged: [list Low-confidence topics or "none"].
 ```
 
 ### Step 3 — Surface Weak Areas
