@@ -542,6 +542,78 @@ with client.messages.stream(
 
 ---
 
+### 10. Citations
+
+> **Instructor — opening narration in persona voice:**
+>
+> *Practitioner:* "Citations turn 'Claude says X' into 'Claude says X, citing paragraph 3 of document Y.' In compliance-sensitive domains — healthcare, legal, finance — that distinction is the difference between a usable answer and an unauditable one. Citations give you a structured pointer from each claim back to the exact source passage."
+>
+> *Socratic:* "Imagine you built a document QA system and a clinician asks 'what diagnoses are listed in this record?' Claude answers correctly — but how does the clinician know which part of the record to trust? What would you need to add to make the answer auditable rather than just accurate?"
+>
+> *Coach:* "Citations are one of those features that sounds advanced but is one parameter away: add `citations: {enabled: True}` to your document input and Claude returns structured source attributions alongside its response. The skill is knowing when traceability matters and when it doesn't."
+>
+> *Challenger:* "Citations vs. RAG — two different tools. Don't confuse them. Explain what each one does, what problem it solves, and give me a scenario where you'd use both together."
+
+---
+
+**What citations are:** When you pass a document to Claude and ask it to analyze, extract, or answer questions from it, Claude can return structured source attributions — exact quotes from the source document linked to the claims in the response.
+
+**How to enable:**
+
+```python
+response = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=1024,
+    messages=[{
+        "role": "user",
+        "content": [
+            {
+                "type": "document",
+                "source": {"type": "text", "media_type": "text/plain", "data": document_text},
+                "title": "Patient Record MRH-2947",
+                "citations": {"enabled": True}
+            },
+            {"type": "text", "text": "What diagnoses are listed?"}
+        ]
+    }]
+)
+```
+
+**What citation objects contain:**
+
+| Field | Description |
+|---|---|
+| `type` | `"char_location"` (character-level) or `"page_location"` (page-level for PDFs) |
+| `cited_text` | Exact quote from the source document |
+| `document_title` | The title you provided on the document input |
+| `start_char_index` / `end_char_index` | Character range (char_location type) |
+| `page` | Page number (page_location type) |
+
+**When to use citations:**
+- Document QA where answers must be traceable to specific source passages
+- Compliance-sensitive domains (healthcare, legal, finance) requiring audit trails
+- Multi-document analysis where the agent must distinguish which source supports which claim
+- Any use case where "Claude found this in the document" must be verifiable by a downstream system or human reviewer
+
+**When NOT to use citations:**
+- Generative tasks (summaries, rewrites, creative output) — citations are meaningless when Claude is synthesizing rather than quoting
+- High-throughput pipelines where citation parsing adds latency with no downstream consumer
+- Simple extraction tasks where the caller already has the source and doesn't need pointers back to it
+
+**Citations vs. RAG:**
+
+RAG retrieves relevant chunks *before* the call. Citations attribute *within* the call. They are complementary: RAG surfaces the right documents; citations verify which parts of those documents support the response. In a production document QA system, you might use RAG to narrow from 1,000 documents to 5, then citations to attribute which passages from those 5 support each answer.
+
+> **Knowledge Check 10:** You're building a healthcare QA agent that answers clinician questions by reading patient notes. Compliance requires that every answer be traceable to a specific source passage. Should you use citations? What does the citation object give you that a plain text response doesn't?
+>
+> *(Take a moment before scrolling)*
+>
+> **Exam-aligned answer:** Yes — use citations. A plain text response tells the clinician what Claude found; the citation object tells them *where* — the exact passage (`cited_text`), its position in the document (`start_char_index`/`end_char_index` or `page`), and which document it came from (`document_title`). That's the audit trail compliance requires. Enable with `citations: {"enabled": True}` on the document input.
+
+> **Exam pattern:** The CCA exam tests citations in document analysis scenarios. The key distinction: citations are for attribution and traceability — appropriate when downstream systems or users need to verify claims against source documents. For generative tasks (summaries, rewrites), citations are meaningless. Questions may also ask about the difference between citations and RAG: RAG = retrieval before the call; citations = attribution within the call. They are complementary, not alternatives.
+
+---
+
 ## Domain Checkpoint
 
 When the student reaches this section, Claude should run the following sequence:
@@ -560,7 +632,8 @@ Ask the student to rate their confidence on each topic:
 > 6. Multi-instance review — calibrating confidence across calls
 > 7. Prompt injection — attack patterns and defenses
 > 8. System prompt design — what belongs in system vs. user turn
-> 9. Extended thinking — when to use it, budget_tokens as a ceiling, exam trap with few-shot"
+> 9. Extended thinking — when to use it, budget_tokens as a ceiling, exam trap with few-shot
+> 10. Citations — when to enable, what citation objects contain, citations vs. RAG"
 
 Wait for student responses before continuing.
 
@@ -593,7 +666,7 @@ Write a one-sentence summary of this session:
 
 ```
 ## Last session note:
-Completed Domain 4 (Prompt Engineering, 20%). [Confidence summary sentence. Flag any Low areas.]
+Completed Domain 4 (Prompt Engineering, 20%). Topics: explicit criteria, few-shot, structured output, validation loops, Batch API, multi-instance review, prompt injection, system prompt design, extended thinking, citations. [Confidence summary sentence. Flag any Low areas.]
 ```
 
 **Step 5 — Surface weak areas**
