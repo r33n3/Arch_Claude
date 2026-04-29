@@ -40,12 +40,12 @@ After the student writes answers, confirm or correct in persona voice, then proc
 
 Before the concept walkthrough, read these official Anthropic sources. The walkthrough will reference them directly.
 
-- [Claude Code Overview](https://docs.anthropic.com/en/docs/claude-code/overview)
-- [Claude Code Configuration](https://docs.anthropic.com/en/docs/claude-code/configuration)
-- [Claude Code Settings](https://docs.anthropic.com/en/docs/claude-code/settings)
-- [Claude Code Slash Commands](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
+1. **Claude Code overview** — https://docs.anthropic.com/en/docs/claude-code/overview
+2. **Claude Code configuration** — https://docs.anthropic.com/en/docs/claude-code/configuration
+3. **Claude Code settings** — https://docs.anthropic.com/en/docs/claude-code/settings
+4. **Claude Code slash commands** — https://docs.anthropic.com/en/docs/claude-code/slash-commands
 5. **Claude Code hooks** — https://docs.anthropic.com/en/docs/claude-code/hooks
-   Read in full. This covers hook types, configuration in settings.json, and exit code behavior. The section 9 concept walkthrough maps directly to this documentation.
+   Read in full. Covers hook types, configuration in settings.json, and exit code behavior. Section 9 of this domain maps directly to this documentation.
 
 > **Instructor note:** Prompt the student to read with a specific question in mind: "While you read — look for anything that explains what you observed in the CLAUDE.md exercise. Annotate where the documentation maps to what you already read."
 

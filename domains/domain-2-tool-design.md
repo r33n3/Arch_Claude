@@ -95,6 +95,8 @@ Read these before continuing. These are the official sources — the exam tests 
 2. **Tool use overview** — https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview
 3. **MCP in Claude Code** — https://docs.anthropic.com/en/docs/claude-code/mcp
 4. **MCP introduction** — https://modelcontextprotocol.io/introduction
+5. **Files API** — https://docs.anthropic.com/en/docs/build-with-claude/files
+   Read in full. Covers upload, reference by file_id, supported types, lifecycle (30-day expiry, deletion). Section 9 of this domain maps directly to this documentation.
 
 **What to look for while reading:**
 - How tool descriptions affect model behavior (not just parameter types)

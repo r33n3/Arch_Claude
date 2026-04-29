@@ -75,11 +75,19 @@ Complete these before the walkthrough. They are the authoritative source — eve
 2. **Structured outputs** — JSON, XML, schema design. Required for the exam.
    https://docs.anthropic.com/en/docs/build-with-claude/structured-outputs
 
-3. **Batch API** — When to use it, how it compares to streaming.
-   https://docs.anthropic.com/en/api/getting-started
+3. **Message Batches API** — When to use it, how it compares to streaming, cost model.
+   https://docs.anthropic.com/en/docs/build-with-claude/message-batches
 
 4. **Chain-of-thought** — Why sometimes you need Claude to reason before it answers.
    https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/chain-of-thought
+
+5. **Extended thinking** — How the reasoning scratchpad works, budget_tokens, streaming thinking blocks.
+   https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking
+   Read the "when to use" and "limitations" sections carefully — these are the exam-tested distinctions.
+
+6. **Citations** — How to enable, citation object structure, supported document types.
+   https://docs.anthropic.com/en/docs/build-with-claude/citations
+   Focus on when citations apply vs. when they don't — the exam distinguishes document QA from generative tasks.
 
 ---
 

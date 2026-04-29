@@ -63,6 +63,9 @@ Before the concept walkthrough, read the official Anthropic documentation on age
 - **Computer use (for agentic context):** [https://docs.anthropic.com/en/docs/agents-and-tools/computer-use](https://docs.anthropic.com/en/docs/agents-and-tools/computer-use)
   Skim this — it is primarily included to show you the outer boundary of what agentic systems can do. The computer-use pattern illustrates extreme agentic autonomy. Useful context for exam questions about agent scope.
 
+- **Models overview:** [https://docs.anthropic.com/en/docs/about-claude/models/overview](https://docs.anthropic.com/en/docs/about-claude/models/overview)
+  Read the current model table. The exam tests model selection decisions — coordinator vs. worker roles, cost-capability tradeoffs. Know the current Claude 4.x tier (Opus 4.7 / Sonnet 4.6 / Haiku 4.5) and what each is optimized for.
+
 > **Instructor:** After reading, ask the student: "What's one thing from the Anthropic docs that you either didn't expect or that you want to dig into further?" Use their answer to calibrate emphasis in the concept walkthrough below.
 
 ---
