@@ -45,7 +45,8 @@ The instructor will direct you to specific documentation pages during the course
 Once prerequisites are confirmed:
 
 ```bash
-cd CCA-Foundations
+git clone https://github.com/your-org/Arch_Claude.git
+cd Arch_Claude
 claude
 ```
 
@@ -63,6 +64,19 @@ Claude Code loads `CLAUDE.md` automatically. First-time students are walked thro
 | 3 | Claude Code | 20% |
 | 4 | Prompt Engineering | 20% |
 | 5 | Context & Reliability | 15% |
+
+## Patterns Library
+
+Two quick-reference files in `patterns/` are designed for use alongside the domains and for final review before the exam:
+
+| File | What it is |
+|---|---|
+| `patterns/decision-frameworks.md` | If-X-then-Y decision tables for every exam domain. Use this when you need to quickly recall which option to choose in a scenario question. |
+| `patterns/anti-patterns.md` | 26 named anti-patterns organized by domain. Each entry describes what the mistake looks like, why it fails, and what to do instead. Review this the morning of the exam. |
+
+The instructor will reference both files during domain checkpoints. You can also open them directly at any time.
+
+---
 
 ## Student State
 
