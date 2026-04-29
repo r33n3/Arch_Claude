@@ -596,7 +596,7 @@ response = client.messages.create(
 - Any use case where "Claude found this in the document" must be verifiable by a downstream system or human reviewer
 
 **When NOT to use citations:**
-- Generative tasks (summaries, rewrites, creative output) — citations are meaningless when Claude is synthesizing rather than quoting
+- Generative tasks (summaries, rewrites, classifications) — citations are meaningless when Claude is synthesizing rather than quoting
 - High-throughput pipelines where citation parsing adds latency with no downstream consumer
 - Simple extraction tasks where the caller already has the source and doesn't need pointers back to it
 

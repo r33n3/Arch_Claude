@@ -397,7 +397,7 @@ response = client.beta.messages.create(
 |---|---|---|
 | When to use | Same doc, multiple calls | One-off analysis |
 | Cost | Pay once for upload; reference is cheaper on repeated calls | Pay full tokens every call |
-| Latency | Lower on repeated calls | Same every call |
+| Latency | Lower on repeated calls (server has the file) | Same every call |
 | Expiry | 30 days | N/A — not stored |
 
 **When to use Files API:**
