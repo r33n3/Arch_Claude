@@ -45,7 +45,7 @@ The instructor will direct you to specific documentation pages during the course
 Once prerequisites are confirmed:
 
 ```bash
-git clone https://github.com/your-org/Arch_Claude.git
+git clone https://github.com/r33n3/Arch_Claude.git
 cd Arch_Claude
 claude
 ```
