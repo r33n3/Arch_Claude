@@ -1,5 +1,32 @@
+# Student progress (local only — never commit)
 .student_cca/
+
+# Development workflow artifacts
 .playwright-mcp/
+docs/superpowers/
+decisions.md
+sprint-progress.md
+launch-worktrees.sh
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+
+# Images (use URLs or hosted assets instead)
 *.png
 *.jpeg
 *.jpg
