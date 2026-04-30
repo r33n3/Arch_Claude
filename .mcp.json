@@ -1,1 +1,0 @@
-{"mcpServers":{"pearl":{"command":"/mnt/c/Users/bradj/Development/PeaRL/.venv/bin/python","args":["-m","pearl_dev.unified_mcp","--directory",".","--api-url","http://localhost:8081/api/v1"],"env":{"PYTHONPATH":"/mnt/c/Users/bradj/Development/PeaRL/src"}}}}

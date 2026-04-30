@@ -1,6 +1,10 @@
 # Student progress (local only — never commit)
 .student_cca/
 
+# Claude Code local config (contains machine-specific paths and MCP server credentials)
+.claude/
+.mcp.json
+
 # Development workflow artifacts
 .playwright-mcp/
 docs/superpowers/
