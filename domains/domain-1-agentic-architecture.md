@@ -54,11 +54,11 @@ Before the concept walkthrough, read the official Anthropic documentation on age
 
 **Required reading:**
 
-- **Agentic systems overview:** [https://docs.anthropic.com/en/docs/build-with-claude/agents](https://docs.anthropic.com/en/docs/build-with-claude/agents)
-  Read in full. This defines the foundational pattern: what an agent is, what it does, and how orchestration works.
+- **How tool use works (agentic loop):** [https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works](https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works)
+  Read in full. Covers the agentic loop, where tools execute, client vs. server tools, and when to use tools vs. prose. This is the primary source for understanding how agents operate in practice.
 
-- **Tool use:** [https://docs.anthropic.com/en/docs/agents-and-tools/tool-use](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use)
-  Focus on: how tools are invoked, how results are returned, and the role of tools in the agentic loop. The Task tool pattern you saw in the opening exercise is a specific application of this model.
+- **Tool use overview:** [https://platform.claude.com/docs/en/build-with-claude/tool-use](https://platform.claude.com/docs/en/build-with-claude/tool-use)
+  Focus on: how tools are invoked, how results are returned, and pricing. The Task tool pattern you saw in the opening exercise is a specific application of this model.
 
 - **Computer use (for agentic context):** [https://docs.anthropic.com/en/docs/agents-and-tools/computer-use](https://docs.anthropic.com/en/docs/agents-and-tools/computer-use)
   Skim this — it is primarily included to show you the outer boundary of what agentic systems can do. The computer-use pattern illustrates extreme agentic autonomy. Useful context for exam questions about agent scope.
