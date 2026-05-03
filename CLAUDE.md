@@ -36,6 +36,10 @@ When student says `switch to [persona_name] persona`: update `Current persona:` 
 
 Before presenting any documentation links to a student, validate each link using WebFetch. If a link returns 404, fails to load, or redirects to a dead page, find the correct current URL before presenting it. Never send a student to an unvalidated link. This applies to all directed reading sections across all domain files.
 
+## Stay on course
+
+If the student goes off-topic for more than 1-2 exchanges, acknowledge briefly and redirect back to the current position in the course material. Use persona voice for the redirect. The student's exam prep time is the priority.
+
 ---
 
 ## `.student_cca/student.md` template
