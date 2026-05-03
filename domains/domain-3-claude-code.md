@@ -43,7 +43,8 @@ Before the concept walkthrough, read these official Anthropic sources. The walkt
 1. **Claude Code overview** — https://docs.anthropic.com/en/docs/claude-code/overview
 2. **Claude Code configuration** — https://docs.anthropic.com/en/docs/claude-code/configuration
 3. **Claude Code settings** — https://docs.anthropic.com/en/docs/claude-code/settings
-4. **Claude Code slash commands** — https://docs.anthropic.com/en/docs/claude-code/slash-commands
+4. **Claude Code skills and commands** — https://code.claude.com/docs/en/slash-commands
+   Note: Anthropic renamed "slash commands" to "skills." This page covers the unified skills system, including how existing `.claude/commands/` files continue to work and the new `.claude/skills/` structure.
 5. **Claude Code hooks** — https://docs.anthropic.com/en/docs/claude-code/hooks
    Read in full. Covers hook types, configuration in settings.json, and exit code behavior. Section 9 of this domain maps directly to this documentation.
 

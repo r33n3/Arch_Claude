@@ -83,8 +83,8 @@ Before the concept walkthrough, read the following official Anthropic documentat
 2. **Prompt caching** — mechanics, what gets cached, cache invalidation, cost model
    https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
 
-3. **Building reliable pipelines** — retry patterns, fallbacks, degradation strategies
-   https://docs.anthropic.com/en/docs/build-with-claude/agents#building-reliable-pipelines
+3. **Handling stop reasons** — retry patterns, continuation logic, truncation handling, pause_turn behavior
+   https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons
 
 4. **API errors** — error codes, what each means, what to retry vs. not
    https://docs.anthropic.com/en/api/errors

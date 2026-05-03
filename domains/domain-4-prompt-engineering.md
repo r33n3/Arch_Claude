@@ -78,7 +78,7 @@ Complete these before the walkthrough. They are the authoritative source — eve
 3. **Message Batches API** — When to use it, how it compares to streaming, cost model.
    https://docs.anthropic.com/en/docs/build-with-claude/message-batches
 
-4. **Chain-of-thought** — Why sometimes you need Claude to reason before it answers.
+4. **Prompting best practices** — Comprehensive reference for Claude's latest models: clarity, examples, XML structuring, thinking modes, and agentic systems. The standalone chain-of-thought page has been consolidated here.
    https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/chain-of-thought
 
 5. **Extended thinking** — How the reasoning scratchpad works, budget_tokens, streaming thinking blocks.
