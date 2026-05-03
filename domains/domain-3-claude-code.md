@@ -107,13 +107,13 @@ CLAUDE.md is a system-level prompt prepended to every conversation in a project.
 
 ---
 
-### 3. Custom Slash Commands
+### 3. Skills and Commands
 
-Slash commands are reusable, invocable commands defined in your project. They're distinct from skills (more on that below).
+> **Terminology note:** Anthropic previously called these "slash commands." They are now unified under the "skills" system. What used to be `.claude/commands/` files are still supported and work identically — they are simply the simpler form of a skill. All invocable `/command-name` entries are now called skills.
 
-**Creating a slash command:**
+**The two approaches — same mechanism, different complexity:**
 
-Create a markdown file in `.claude/commands/`:
+**Simple form (`.claude/commands/`):** A single markdown file. The file name becomes the command. Contents run as a prompt when invoked.
 
 ```
 .claude/
@@ -123,28 +123,38 @@ Create a markdown file in `.claude/commands/`:
     deploy-check.md
 ```
 
-Each file contains the prompt or instruction that runs when the command is invoked. The file name becomes the command name: `/review-pr`, `/run-tests`, `/deploy-check`.
+**Full skills form (`.claude/skills/`):** A directory with a `SKILL.md` entrypoint, optional supporting files, and YAML frontmatter for advanced control.
 
-**Scoping:**
-- `.claude/commands/` in your project root — project-scoped, committed to the repo, shared with your team
-- `~/.claude/commands/` — personal commands, available in all your projects, not shared
+```
+.claude/
+  skills/
+    review-pr/
+      SKILL.md          ← instructions + frontmatter
+      checklist.md      ← supporting reference file
+```
+
+Both create the same `/review-pr` command. The skills directory form adds: supporting files, frontmatter to control auto-invocation, and the ability for Claude to load the skill automatically when relevant.
+
+**Scoping (applies to both forms):**
+- `.claude/commands/` or `.claude/skills/` in your project root — project-scoped, committed to the repo, shared with your team
+- `~/.claude/commands/` or `~/.claude/skills/` — personal, available in all your projects, not shared
 
 **Invoking:**
-Type `/command-name` in Claude Code. Claude executes the file's contents as a prompt.
+Type `/command-name` in Claude Code. Claude executes the skill's instructions as a prompt. Claude can also invoke skills automatically when their `description` frontmatter matches the current task — the simple `.claude/commands/` form does not support auto-invocation.
 
-**When to use slash commands vs. skills:**
-- **Slash commands** — project-specific workflows (run this test suite, check this PR format, generate this type of file). They travel with the project.
-- **Skills** — cross-project capabilities that need structured logic, references to other files, or complex behavior. Skills can reference other skills and contain executable reasoning patterns.
+**When to use the simple form vs. full skills:**
+- **Simple (`.claude/commands/`)** — one-file workflows that you invoke manually: run this test suite, check this PR, generate this type of file
+- **Full skills (`.claude/skills/`)** — anything requiring supporting files, auto-invocation by Claude, or frontmatter control (e.g., `disable-model-invocation: true` to prevent Claude from triggering a deploy skill automatically)
 
-The course's persona switching (`switch to [persona_name] persona`) is defined in CLAUDE.md directly rather than as a slash command because it's a simple phrase-triggered behavior, not an invocable command. That's a design choice — it could have been `/switch-persona practitioner`.
+The course's persona switching (`switch to [persona_name] persona`) is defined in CLAUDE.md directly rather than as a skill because it's a simple phrase-triggered behavior, not an invocable command. That's a design choice — it could have been `/switch-persona practitioner`.
 
 ---
 
-### 4. Skills
+### 4. Skills — Advanced Capabilities
 
-Skills are reusable behavior packages invoked via the Skill tool. They extend Claude Code's capabilities beyond what's possible with a simple slash command.
+Beyond the invocable `/command-name` form, skills are also used as structured behavior packages loaded via the `Skill` tool in the harness. These carry preconditions, references to other files, and multi-step reasoning instructions.
 
-**Key properties:**
+**Key properties of harness-invoked skills:**
 - Skills can reference other files, including other skills
 - Skills contain structured reasoning instructions
 - Skills are invoked by the harness via the `Skill` tool
@@ -152,7 +162,7 @@ Skills are reusable behavior packages invoked via the Skill tool. They extend Cl
 
 **In this course:** The `worktree-setup` skill, the `spec` skill, the `merge-worktrees` skill — these are all skills in the course environment. When an instructor invokes `/worktree-setup`, the harness loads that skill and executes its instructions.
 
-**Exam pattern:** Know the distinction between a slash command (simple prompt file in `.claude/commands/`) and a skill (structured capability invoked via Skill tool). The exam tests whether you know which mechanism to use for which problem.
+**Exam pattern:** Understand that "slash commands" is the old terminology — Anthropic now calls all of these skills. Know the two storage forms (`.claude/commands/` simple vs. `.claude/skills/` directory) and what the directory form adds: supporting files, frontmatter, auto-invocation by Claude. Questions about which mechanism to use turn on whether you need Claude to invoke the skill automatically, or whether you always want to trigger it manually.
 
 ---
 
@@ -356,8 +366,8 @@ Ask the student to rate each topic: High / Medium / Low
 
 1. CLAUDE.md hierarchy (home vs. repo vs. subdirectory)
 2. What belongs in CLAUDE.md
-3. Custom slash commands — creating, scoping, invoking
-4. Skills — what they are and when to use them
+3. Skills and commands — simple form vs. full skills directory, scoping, invoking, auto-invocation
+4. Skills (harness-invoked) — what they are and when to use them vs. the invocable form
 5. Path-specific rules for monorepos
 6. Plan mode — when to use it
 7. CI/CD integration — `--print` and headless mode
