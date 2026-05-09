@@ -550,6 +550,57 @@ with client.messages.stream(
 
 ---
 
+### 9a. Adaptive Thinking
+
+> **Instructor — opening narration in persona voice:**
+>
+> *Practitioner:* "Extended thinking gives the model a fixed token budget to reason through a problem before responding. Adaptive thinking is different — it's the model dynamically deciding how much reasoning to apply based on task complexity, without you setting a budget. The distinction matters on the exam because they answer different questions: extended thinking is about you controlling reasoning depth; adaptive thinking is about the model self-regulating it."
+>
+> *Socratic:* "You've seen extended thinking — you set `budget_tokens` and the model reasons up to that limit. Now: what would it mean for the model to decide on its own how much reasoning to apply? What does that remove from your control, and what does it give you?"
+>
+> *Coach:* "Adaptive thinking is the more hands-off version of extended thinking. You don't set a token budget — the model figures out how much reasoning the task needs. The tradeoff is predictability: extended thinking gives you cost control; adaptive thinking gives you convenience."
+>
+> *Challenger:* "Extended thinking and adaptive thinking are not the same feature. If you conflate them on the exam, you'll get model selection questions wrong. What's the precise difference, and which models support which?"
+
+---
+
+**What adaptive thinking is:**
+
+Adaptive thinking is a reasoning mode where the model dynamically applies deeper reasoning when task complexity warrants it — without requiring you to configure `budget_tokens`. The model self-regulates reasoning depth based on the difficulty of the task.
+
+**How it differs from extended thinking:**
+
+| | Extended thinking | Adaptive thinking |
+|---|---|---|
+| Configuration | You set `budget_tokens` explicitly | No configuration required |
+| Cost control | Predictable ceiling | Variable — model decides depth |
+| Transparency | Thinking blocks visible in response | Reasoning is internal |
+| Use case | When you need guaranteed reasoning depth | When you want automatic reasoning calibration |
+
+**Model availability — this is exam-tested:**
+
+| Model | Extended thinking | Adaptive thinking |
+|---|---|---|
+| Claude Opus 4.7 | No | **Yes** |
+| Claude Sonnet 4.6 | Yes | **Yes** |
+| Claude Haiku 4.5 | Yes | No |
+
+Opus 4.7 uses adaptive thinking rather than explicit extended thinking. Sonnet 4.6 supports both. Haiku 4.5 supports extended thinking but not adaptive thinking.
+
+**When to use adaptive thinking:**
+- Tasks with variable complexity where you don't want to tune `budget_tokens` per request
+- General-purpose agents where the reasoning requirement varies across inputs
+- Situations where the overhead of extended thinking configuration is not justified
+
+**When to use extended thinking instead:**
+- When you need cost predictability (adaptive thinking depth varies)
+- When you need reasoning transparency (`thinking` content blocks are only visible with explicit extended thinking)
+- When you want to guarantee a minimum reasoning depth for all requests
+
+> **Exam pattern:** Questions will present a scenario and ask which thinking mode is appropriate. The discriminating factors are: (1) does the developer need cost predictability → extended thinking; (2) does the developer need reasoning transparency → extended thinking; (3) is the model Opus 4.7 → adaptive thinking is the available mode. Answers that treat extended thinking and adaptive thinking as interchangeable are incorrect.
+
+---
+
 ### 10. Citations
 
 > **Instructor — opening narration in persona voice:**

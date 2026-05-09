@@ -108,6 +108,16 @@ The limit is not a performance guideline. It is a hard boundary. When you exceed
 - Tool definitions (each tool schema costs tokens)
 - The response itself (output tokens count against the context limit)
 
+**Current context window limits by model:**
+
+| Model | Context window | Notes |
+|---|---|---|
+| Claude Opus 4.7 | 1M tokens | New tokenizer — token counts differ from prior models |
+| Claude Sonnet 4.6 | 1M tokens | Up from 200k on Sonnet 4.5 |
+| Claude Haiku 4.5 | 200k tokens | |
+
+The limit is not a performance guideline. It is a hard boundary. When you exceed it, the request fails. Exam questions that ask about context limits expect you to know the current model-specific values — not a single universal number.
+
 **The BuildOps problem:**
 
 In the BuildOps system you analyzed, the Config Auditor receives "the last 30 days of conversation history" plus the audit request. An engineering team submitted a 200-page specification. That's roughly 100,000+ tokens of input — potentially exceeding the context limit before the subagent has generated a single token of output.
@@ -155,6 +165,16 @@ Extract and preserve specific information from the conversation (decisions made,
 *When it works:* Long-running workflows with identifiable "anchor facts" that must persist. Coordinator patterns where you track a decision log rather than full history.
 
 *When it breaks:* When you can't reliably identify what's important in advance. When important context is implicit in the conversation flow rather than explicit facts.
+
+**Server-side compaction (Beta) — Anthropic's managed strategy**
+
+For long-running conversations on Opus 4.7, Opus 4.6, and Sonnet 4.6, Anthropic offers server-side compaction: the API automatically summarizes earlier turns when the context approaches its limit, preserving a compressed representation of prior conversation without requiring your application to implement summarization logic.
+
+*When it works:* Long-running agent sessions where you want Anthropic to manage compaction automatically. Reduces engineering overhead for context management.
+
+*When it breaks:* When you need precise control over what gets summarized vs. retained (server-side compaction applies its own summarization logic). When the compaction behavior needs to be deterministic or auditable. When you're on a model that doesn't support it (Haiku 4.5).
+
+*Exam pattern:* Know that server-side compaction exists, which models support it (Opus 4.7 / 4.6, Sonnet 4.6), and the key tradeoff: convenience vs. control. Manual selective retention gives you precise control; server-side compaction gives you automation at the cost of transparency into what was preserved.
 
 ---
 
@@ -216,9 +236,16 @@ You mark a portion of your prompt with a cache control breakpoint. Anthropic cac
 - Content that changes between requests (the user's actual query, dynamic data)
 - Anything after the last cache breakpoint
 
-**Cost model:**
+**Cost model — two TTL tiers:**
 
-Cache writes cost slightly more than normal input tokens (one-time cost). Cache reads cost significantly less than normal input tokens. If you have a 10,000-token system prompt used in 100 requests, the break-even point for caching is roughly the first few requests — after that, pure savings.
+| TTL | Cache write cost | Cache read cost | Use when |
+|---|---|---|---|
+| 5 minutes (default) | 1.25× input price | 0.1× input price | Frequently updated prompts; short sessions |
+| 1 hour | 2.0× input price | 0.1× input price | Stable long-running system prompts; high request volume |
+
+The write cost is a one-time charge when the cache is populated or refreshed. The read cost applies on every subsequent request that hits the cached prefix. With a 10,000-token system prompt at 500 requests/day, the 1-hour tier pays back its higher write cost within the first few requests and delivers significant savings over the full day.
+
+> **Exam pattern:** The CCA exam tests the two-tier cost model. Know that cache reads are 0.1× regardless of TTL tier, and that the choice between 5-minute and 1-hour is a tradeoff between write cost and how long the cache stays warm. A prompt that changes every 10 minutes should not use the 1-hour TTL — the cache will be re-written frequently at 2× write cost with few reads to amortize it.
 
 **Cache invalidation:**
 

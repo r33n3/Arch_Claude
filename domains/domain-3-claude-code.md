@@ -166,7 +166,53 @@ Beyond the invocable `/command-name` form, skills are also used as structured be
 
 ---
 
-### 5. Path-Specific Rules
+### 5. Subagents
+
+Subagents are specialized Claude Code agents defined in `.claude/agents/` with their own system prompt, tool permissions, and invocation rules. They let you decompose complex workflows into agents with bounded, focused roles — each running in isolated context.
+
+**Defining a subagent:**
+
+Create a markdown file in `.claude/agents/`:
+
+```
+.claude/
+  agents/
+    security-reviewer.md
+    test-runner.md
+    doc-writer.md
+```
+
+Each file contains YAML frontmatter and a markdown body:
+
+```yaml
+---
+name: security-reviewer
+description: Reviews code changes for security vulnerabilities. Invoke when code is ready for security review before merge.
+tools: Read, Grep, WebFetch
+---
+
+You are a security reviewer. When invoked, analyze the provided code for:
+- Injection vulnerabilities (SQL, command, prompt)
+- Authentication and authorization gaps
+- Secrets or credentials in code
+- Insecure dependencies
+
+Return a structured finding report with severity (Critical / High / Medium / Low) for each issue.
+```
+
+**How subagents differ from skills:**
+- **Skills** — invocable instructions; run inline in the current Claude context
+- **Subagents** — isolated agents with their own context, their own tool permissions, and a defined role; Claude delegates to them and synthesizes their output
+
+**Scoping:**
+- `.claude/agents/` at project root — project-scoped, shared with team
+- `~/.claude/agents/` — personal, available across all projects
+
+**Exam pattern:** Know that subagents provide context isolation (the subagent cannot see the parent's conversation history), bounded tool permissions (the `tools:` field controls what the subagent can access), and role specificity (the system prompt defines a narrow purpose). These are the same isolation properties that make coordinator/subagent patterns reliable — now available natively in Claude Code.
+
+---
+
+### 6. Path-Specific Rules
 
 For monorepos or complex projects, you can scope configuration to specific directories by adding CLAUDE.md files at the subdirectory level.
 
@@ -368,6 +414,7 @@ Ask the student to rate each topic: High / Medium / Low
 2. What belongs in CLAUDE.md
 3. Skills and commands — simple form vs. full skills directory, scoping, invoking, auto-invocation
 4. Skills (harness-invoked) — what they are and when to use them vs. the invocable form
+5. Subagents — `.claude/agents/` definition, context isolation, bounded tool permissions
 5. Path-specific rules for monorepos
 6. Plan mode — when to use it
 7. CI/CD integration — `--print` and headless mode

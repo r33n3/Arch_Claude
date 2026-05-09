@@ -204,23 +204,42 @@ The tool result is part of the model's context. Design it like you're writing in
 
 ---
 
-### 4. Built-in Tools
+### 4. Client-Executed vs. Server-Executed Tools
 
-Claude has three built-in tool capabilities that don't require you to define schemas:
+This is a foundational distinction the exam tests. All tools fall into one of two categories based on **who runs the execution loop**.
 
-**Computer use** — Allows Claude to control a computer: take screenshots, click, type, navigate GUIs. Use when the target system has no API — only a visual interface. Not for API-accessible systems. Slower and more fragile than API tools; use only when necessary.
+**Client-executed tools** — Your application handles everything: you define the schema, Claude emits a `tool_use` block, your code runs the operation, and you return a `tool_result`. The agentic loop lives in your application. This is the default pattern for user-defined tools and all the MedRoute examples above.
 
-**Web search** — Allows Claude to search the web for current information. Use when the task requires information not in the model's training data or when currency matters (recent events, current prices, updated documentation). Does not replace structured data retrieval from your own systems.
+**Server-executed tools** — Anthropic runs the execution loop on its infrastructure. You enable the tool in your request; Claude calls it, the server executes it, and the result flows back to Claude — all before the API response reaches you. You never construct a `tool_result` block for these tools.
 
-**Code execution** — Allows Claude to write and run code in a sandboxed environment. Use for data analysis, computation, file transformation, and testing. The sandbox is isolated — code execution cannot access external systems unless explicitly connected.
+**Server-executed tools available today:**
+- **`web_search`** — live web search; results returned directly to Claude
+- **`web_fetch`** — retrieve a specific URL
+- **`code_execution`** — sandboxed code interpreter
+- **`tool_search`** — dynamic tool discovery from a registry
+
+**Why the distinction matters for system design:**
+
+| | Client-executed | Server-executed |
+|---|---|---|
+| Who handles execution | Your application | Anthropic's infrastructure |
+| `tool_result` required? | Yes — you must return it | No — server handles it |
+| Execution loop | In your code | Inside the API call |
+| Failure handling | You catch errors | `stop_reason: "pause_turn"` signals incomplete work |
+| Latency | Your infrastructure speed | Anthropic infrastructure |
+
+**The `pause_turn` stop reason** — when a server-executed tool loop hits its iteration limit (default 10), the API returns `stop_reason: "pause_turn"` rather than `"end_turn"`. The correct response is to re-send the conversation to let Claude continue — not to treat it as a final response. This is the primary failure mode to know for server-executed tools.
+
+> **Exam pattern:** The CCA exam tests whether you know that server-executed tools change the execution contract. You cannot intercept or process intermediate results from a server-executed tool. If your system needs to inspect or act on tool call outputs mid-execution, server-executed tools are the wrong choice — use client-executed tools instead.
 
 **When to reach for each:**
 
-| Built-in tool | Use when | Avoid when |
-|---|---|---|
-| Computer use | No API exists; GUI is the only interface | API is available — computer use adds latency and fragility |
-| Web search | Need current external information | Information is in your own system — use a retrieval tool instead |
-| Code execution | Need computation, transformation, or analysis | Task is reasoning-only — code adds unnecessary complexity |
+| Tool | Type | Use when | Avoid when |
+|---|---|---|---|
+| Computer use | Client-executed (you provide screenshots/actions) | No API exists; GUI only | API is available |
+| Web search | Server-executed | Need current external information | Information is in your own system |
+| Code execution | Server-executed | Computation, transformation, analysis | Task is reasoning-only |
+| Web fetch | Server-executed | Retrieve a specific URL | Real-time interception of content is required |
 
 ---
 
@@ -435,7 +454,7 @@ Ask the student to rate their confidence on each topic:
 1. Tool interface design (name, description, input schema)
 2. Structured error responses
 3. tool_choice options (auto / any / tool)
-4. Built-in tools (computer use, web search, code execution)
+4. Client-executed vs. server-executed tools — who runs the loop, pause_turn stop reason
 5. Tool distribution (direct API vs. MCP vs. Claude Code built-ins)
 6. MCP configuration
 7. Tool result handling
